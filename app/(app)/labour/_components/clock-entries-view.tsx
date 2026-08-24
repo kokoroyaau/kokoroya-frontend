@@ -31,11 +31,14 @@ function formatTime(iso: string) {
   });
 }
 
+const QUARTER_HOUR_MS = 15 * 60_000;
+
 function formatDuration(clockInAt: string, clockOutAt: string | null) {
   if (!clockOutAt) return "—";
-  const hours =
-    (new Date(clockOutAt).getTime() - new Date(clockInAt).getTime()) /
-    3_600_000;
+  const rawMs =
+    new Date(clockOutAt).getTime() - new Date(clockInAt).getTime();
+  const roundedMs = Math.round(rawMs / QUARTER_HOUR_MS) * QUARTER_HOUR_MS;
+  const hours = roundedMs / 3_600_000;
   return `${hours.toFixed(2)}h`;
 }
 
