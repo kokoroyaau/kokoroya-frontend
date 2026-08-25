@@ -12,7 +12,7 @@ export interface BaseResponse<T> {
 
 function buildUrl(path: string): string {
   return new URL(
-    path.replace(/^\//, ""),
+    `v1/${path.replace(/^\//, "")}`,
     BASE_URL.replace(/\/?$/, "/"),
   ).toString();
 }
