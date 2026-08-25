@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { getToken, getSelectedBranch } from "@/lib/auth";
 import { env } from "@/env";
 
@@ -37,6 +38,10 @@ async function request<T>(
   });
 
   if (res.status === 204) return undefined as T;
+
+  if (res.status === 401 && token) {
+    redirect("/sign-in");
+  }
 
   const json: BaseResponse<unknown> = await res.json().catch(() => ({
     success: false,
