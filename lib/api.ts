@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import { getToken, getSelectedBranch } from "@/lib/auth";
+import { getToken, getSelectedBranch, clearToken } from "@/lib/auth";
+import { clearSessionAction } from "@/lib/actions/auth";
 import { env } from "@/env";
 
 const BASE_URL = env.NEXT_PUBLIC_API_URL;
@@ -40,11 +41,16 @@ async function request<T>(
   if (res.status === 204) return undefined as T;
 
   if (res.status === 401 && token) {
-    // redirect() only works during server render; api calls also happen
-    // client-side (event handlers), where it just throws uncaught.
+    // Stale/revoked token — clear it so retries/prefetches don't keep
+    // resending it and looping back into another 401 redirect.
     if (typeof window === "undefined") {
+      await clearToken();
       redirect("/sign-in");
     } else {
+      // redirect() only works during server render; api calls also happen
+      // client-side (event handlers), where it just throws uncaught.
+      // Cookie is httpOnly, so it can only be cleared via a server action.
+      await clearSessionAction();
       window.location.href = "/sign-in";
       return new Promise<T>(() => {}); // navigating away, stop here
     }

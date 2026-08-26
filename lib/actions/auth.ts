@@ -20,6 +20,11 @@ export async function loginAction(payload: LoginPayload) {
   }
 }
 
+export async function clearSessionAction() {
+  await clearToken();
+  await clearSelectedBranch();
+}
+
 export async function logoutAction() {
   try {
     await postLogout();
