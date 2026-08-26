@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getToken, getSelectedBranch, clearToken } from "@/lib/auth";
+import { getToken, getSelectedBranch } from "@/lib/auth";
 import { clearSessionAction } from "@/lib/actions/auth";
 import { env } from "@/env";
 
@@ -41,10 +41,9 @@ async function request<T>(
   if (res.status === 204) return undefined as T;
 
   if (res.status === 401 && token) {
-    // Stale/revoked token — clear it so retries/prefetches don't keep
-    // resending it and looping back into another 401 redirect.
     if (typeof window === "undefined") {
-      await clearToken();
+      // Next.js forbids mutating cookies during a Server Component render
+      // (only Server Actions/Route Handlers may) — just redirect here.
       redirect("/sign-in");
     } else {
       // redirect() only works during server render; api calls also happen
