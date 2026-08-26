@@ -36,14 +36,12 @@ export default function LoginPage() {
 
   const { mutate: postLoginMutation, isPending } = useMutation({
     mutationFn: async (values: LoginFormValues) => {
-      try {
-        await loginAction(values);
-        router.push("/");
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Something went wrong",
-        );
+      const result = await loginAction(values);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
       }
+      router.push("/");
     },
   });
 

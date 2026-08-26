@@ -40,7 +40,14 @@ async function request<T>(
   if (res.status === 204) return undefined as T;
 
   if (res.status === 401 && token) {
-    redirect("/sign-in");
+    // redirect() only works during server render; api calls also happen
+    // client-side (event handlers), where it just throws uncaught.
+    if (typeof window === "undefined") {
+      redirect("/sign-in");
+    } else {
+      window.location.href = "/sign-in";
+      return new Promise<T>(() => {}); // navigating away, stop here
+    }
   }
 
   const json: BaseResponse<unknown> = await res.json().catch(() => ({
