@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { getToken, getSelectedBranch } from "@/lib/auth";
-import { clearSessionAction } from "@/lib/actions/auth";
 import { env } from "@/env";
 
 const BASE_URL = env.NEXT_PUBLIC_API_URL;
@@ -41,16 +40,16 @@ async function request<T>(
   if (res.status === 204) return undefined as T;
 
   if (res.status === 401 && token) {
+    // Stale/invalid token: go through a Route Handler (allowed to mutate
+    // cookies, unlike a Server Component render) that clears the cookie
+    // before landing on /sign-in — otherwise proxy.ts still sees a
+    // "present" token there and bounces back to "/", looping forever.
     if (typeof window === "undefined") {
-      // Next.js forbids mutating cookies during a Server Component render
-      // (only Server Actions/Route Handlers may) — just redirect here.
-      redirect("/sign-in");
+      redirect("/api/clear-session");
     } else {
       // redirect() only works during server render; api calls also happen
       // client-side (event handlers), where it just throws uncaught.
-      // Cookie is httpOnly, so it can only be cleared via a server action.
-      await clearSessionAction();
-      window.location.href = "/sign-in";
+      window.location.href = "/api/clear-session";
       return new Promise<T>(() => {}); // navigating away, stop here
     }
   }
