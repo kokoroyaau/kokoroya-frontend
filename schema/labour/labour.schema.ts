@@ -6,11 +6,22 @@ export interface ShiftEntryInfo {
   clock_out_at: string | null;
 }
 
+export interface PayBreakdown {
+  hours: number;
+  rate: number;
+  total: number;
+}
+
 export interface EmployeeWeekRow {
   user_id: number;
   name: string;
+  employer_name: string | null;
+  employer_abn: string | null;
   daily_hours: Record<string, number>;
   daily_shifts: Record<string, ShiftEntryInfo[]>;
+  weekday: PayBreakdown;
+  saturday: PayBreakdown;
+  sunday: PayBreakdown;
   total_hours: number;
   percentage_of_all: number;
   gross_pay: number;

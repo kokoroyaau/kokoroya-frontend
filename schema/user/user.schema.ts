@@ -22,6 +22,8 @@ export interface UserData {
   role: string;
   phone: string | null;
   tfn: string | null;
+  employer_name: string | null;
+  employer_abn: string | null;
   pin: string | null;
   rate_weekday: number | null;
   rate_weekend: number | null;
@@ -44,6 +46,10 @@ export const employeeFormSchema = z.object({
   role: z.enum(["owner", "employee"]),
   phone: z.string().optional(),
   tfn: z.string().optional(),
+  // Legal entity shown on this employee's payslip — kept per-employee since
+  // staff at the same branch can be employed under different entities.
+  employer_name: z.string().optional(),
+  employer_abn: z.string().optional(),
   pin: z.union([z.string().regex(/^\d{4}$/, "PIN must be 4 digits"), z.literal("")]),
   rate_weekday: z.string().optional(),
   rate_weekend: z.string().optional(),

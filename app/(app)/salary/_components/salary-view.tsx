@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getSalaryReportAction } from "@/lib/actions/labour";
 import { useDateRange } from "@/app/(app)/_components/use-date-range";
@@ -54,12 +55,13 @@ export function SalaryView() {
               <th className="p-3 text-right font-medium">Net Pay</th>
               <th className="p-3 text-right font-medium">Super ({(SUPER_RATE * 100).toFixed(0)}%)</th>
               <th className="p-3 text-right font-medium">Total</th>
+              <th className="p-3"></th>
             </tr>
           </thead>
           <tbody>
             {rows.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-muted-foreground p-4 text-center">
+                <td colSpan={8} className="text-muted-foreground p-4 text-center">
                   No employees in this branch.
                 </td>
               </tr>
@@ -74,6 +76,14 @@ export function SalaryView() {
                 <td className="p-3 text-right text-muted-foreground">{money(r.superAmount)}</td>
                 <td className="p-3 text-right font-semibold">
                   {money(r.netPay + r.superAmount)}
+                </td>
+                <td className="p-3 text-right">
+                  <Link
+                    href={`/salary/payslip/${r.user_id}?start=${startDate}&end=${endDate}`}
+                    className="text-primary text-xs hover:underline"
+                  >
+                    Payslip
+                  </Link>
                 </td>
               </tr>
             ))}
@@ -96,6 +106,7 @@ export function SalaryView() {
                 <td className="p-3 text-right">
                   {money(rows.reduce((a, r) => a + r.netPay + r.superAmount, 0))}
                 </td>
+                <td className="p-3"></td>
               </tr>
             </tfoot>
           )}

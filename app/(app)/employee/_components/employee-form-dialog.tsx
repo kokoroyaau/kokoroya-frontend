@@ -61,6 +61,8 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
       role: (employee?.role as "owner" | "employee") ?? "employee",
       phone: employee?.phone ?? "",
       tfn: employee?.tfn ?? "",
+      employer_name: employee?.employer_name ?? "",
+      employer_abn: employee?.employer_abn ?? "",
       pin: employee?.pin ?? "",
       rate_weekday: employee?.rate_weekday?.toString() ?? "",
       rate_weekend: employee?.rate_weekend?.toString() ?? "",
@@ -191,6 +193,34 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
                 render={({ field }) => (
                   <FormItem className="flex-1">
                     <FormLabel>TFN</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="employer_name"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Payslip Employer Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="employer_abn"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Payslip Employer ABN</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
