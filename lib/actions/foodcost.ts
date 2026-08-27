@@ -10,8 +10,8 @@ import {
   deleteSupplier,
 } from "@/api/foodcost";
 
-export async function getReportAction(startDate: string, endDate: string) {
-  return getReport(startDate, endDate);
+export async function getReportAction(startDate: string, endDate: string, branchId?: number) {
+  return getReport(startDate, endDate, branchId);
 }
 
 export async function upsertPurchaseEntryAction(data: {

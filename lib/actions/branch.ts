@@ -5,6 +5,7 @@ import {
   createBranch,
   deleteBranch,
   getBranchEmployees,
+  getMyBranches,
   updateBranch,
 } from "@/api/branch";
 import { setSelectedBranch, clearSelectedBranch } from "@/lib/auth";
@@ -38,4 +39,8 @@ export async function deleteBranchAction(id: number) {
 
 export async function getBranchEmployeesAction(id: number) {
   return getBranchEmployees(id);
+}
+
+export async function getMyBranchesAction() {
+  return getMyBranches();
 }

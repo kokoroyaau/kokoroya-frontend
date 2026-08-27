@@ -1,6 +1,7 @@
 import { BaseResponse } from "@/lib/api";
 
 export interface ShiftEntryInfo {
+  id: number;
   clock_in_at: string;
   clock_out_at: string | null;
 }

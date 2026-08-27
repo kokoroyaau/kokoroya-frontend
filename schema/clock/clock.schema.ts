@@ -6,3 +6,12 @@ export interface PunchResponseData {
   at: string;
 }
 export type PunchResponse = BaseResponse<PunchResponseData>;
+
+export interface TimeEntryData {
+  id: number;
+  user_id: number;
+  branch_id: number;
+  clock_in_at: string;
+  clock_out_at: string | null;
+}
+export type TimeEntryResponse = BaseResponse<TimeEntryData>;

@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { getLabourReportAction } from "@/lib/actions/labour";
+import { updateClockEntryAction } from "@/lib/actions/clock";
 import { mondayOf, isoDate, addDays } from "@/lib/date";
 import { WeekNav } from "@/app/(app)/_components/week-nav";
 import {
@@ -13,23 +15,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DateTimePicker } from "./datetime-picker";
 
 const ALL_EMPLOYEES = "all";
 
 type FlatEntry = {
+  id: number;
   userId: number;
   name: string;
   date: string;
   clockInAt: string;
   clockOutAt: string | null;
 };
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 const QUARTER_HOUR_MS = 15 * 60_000;
 
@@ -44,6 +41,7 @@ function formatDuration(clockInAt: string, clockOutAt: string | null) {
 
 export function ClockEntriesView() {
   const [employeeFilter, setEmployeeFilter] = useState(ALL_EMPLOYEES);
+  const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const weekParam = searchParams.get("week");
   const monday = weekParam
@@ -54,9 +52,22 @@ export function ClockEntriesView() {
   const prevWeekParam = isoDate(addDays(monday, -7));
   const nextWeekParam = isoDate(addDays(monday, 7));
 
+  const queryKey = ["labour-report", weekStartDate];
   const { data: report, isLoading, error } = useQuery({
-    queryKey: ["labour-report", weekStartDate],
+    queryKey,
     queryFn: () => getLabourReportAction(weekStartDate, weekEndDate),
+  });
+
+  const { mutate: saveEntry } = useMutation({
+    mutationFn: (vars: { id: number; clockInAt: string; clockOutAt: string | null }) =>
+      updateClockEntryAction(vars.id, {
+        clock_in_at: vars.clockInAt,
+        clock_out_at: vars.clockOutAt,
+      }),
+    onError: () => toast.error("Failed to save clock entry"),
+    // Editing an entry recomputes labour hours server-side, so refetch
+    // rather than optimistically recompute daily/total hours here.
+    onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
 
   if (isLoading) return <p className="text-muted-foreground">Loading...</p>;
@@ -74,6 +85,7 @@ export function ClockEntriesView() {
     .flatMap((employee) =>
       Object.entries(employee.daily_shifts).flatMap(([date, shifts]) =>
         (shifts ?? []).map((shift) => ({
+          id: shift.id,
           userId: employee.user_id,
           name: employee.name,
           date,
@@ -127,13 +139,30 @@ export function ClockEntriesView() {
                 </td>
               </tr>
             )}
-            {entries.map((entry, i) => (
-              <tr key={i} className="border-b border-border/60">
+            {entries.map((entry) => (
+              <tr key={entry.id} className="border-b border-border/60">
                 <td className="p-3 font-medium">{entry.name}</td>
                 <td className="p-3">{entry.date}</td>
-                <td className="p-3">{formatTime(entry.clockInAt)}</td>
                 <td className="p-3">
-                  {entry.clockOutAt ? formatTime(entry.clockOutAt) : "open"}
+                  <DateTimePicker
+                    value={new Date(entry.clockInAt)}
+                    onChange={(date) => {
+                      const clockInAt = date.toISOString();
+                      if (clockInAt === entry.clockInAt) return;
+                      saveEntry({ id: entry.id, clockInAt, clockOutAt: entry.clockOutAt });
+                    }}
+                  />
+                </td>
+                <td className="p-3">
+                  <DateTimePicker
+                    value={entry.clockOutAt ? new Date(entry.clockOutAt) : null}
+                    placeholder="open"
+                    onChange={(date) => {
+                      const clockOutAt = date.toISOString();
+                      if (clockOutAt === entry.clockOutAt) return;
+                      saveEntry({ id: entry.id, clockInAt: entry.clockInAt, clockOutAt });
+                    }}
+                  />
                 </td>
                 <td className="p-3 text-right">
                   {formatDuration(entry.clockInAt, entry.clockOutAt)}

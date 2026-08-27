@@ -7,8 +7,8 @@ import {
   upsertWeeklyRate,
 } from "@/api/labour";
 
-export async function getLabourReportAction(startDate: string, endDate: string) {
-  return getReport(startDate, endDate);
+export async function getLabourReportAction(startDate: string, endDate: string, branchId?: number) {
+  return getReport(startDate, endDate, branchId);
 }
 
 export async function getSalaryReportAction(startDate: string, endDate: string) {
