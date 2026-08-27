@@ -96,3 +96,17 @@
     @apply font-sans;
   }
 }
+
+/* App chrome (sidebar + its toggle) never belongs on a printed page —
+   hidden globally rather than per-page so any future print-only view gets
+   this for free. The page's own header/footer (date, URL, page number) is
+   a browser print-dialog setting ("Headers and footers"), not something
+   CSS can remove. */
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="sidebar-gap"],
+  [data-slot="sidebar-rail"],
+  [data-slot="sidebar-trigger"] {
+    display: none !important;
+  }
+}
