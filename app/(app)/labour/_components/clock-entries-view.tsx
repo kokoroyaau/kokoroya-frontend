@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DateTimePicker } from "./datetime-picker";
+import { TimeInput } from "./datetime-picker";
 
 const ALL_EMPLOYEES = "all";
 
@@ -144,21 +144,21 @@ export function ClockEntriesView() {
                 <td className="p-3 font-medium">{entry.name}</td>
                 <td className="p-3">{entry.date}</td>
                 <td className="p-3">
-                  <DateTimePicker
-                    value={new Date(entry.clockInAt)}
-                    onChange={(date) => {
-                      const clockInAt = date.toISOString();
+                  <TimeInput
+                    date={entry.date}
+                    value={entry.clockInAt}
+                    onChange={(clockInAt) => {
                       if (clockInAt === entry.clockInAt) return;
                       saveEntry({ id: entry.id, clockInAt, clockOutAt: entry.clockOutAt });
                     }}
                   />
                 </td>
                 <td className="p-3">
-                  <DateTimePicker
-                    value={entry.clockOutAt ? new Date(entry.clockOutAt) : null}
+                  <TimeInput
+                    date={entry.date}
+                    value={entry.clockOutAt}
                     placeholder="open"
-                    onChange={(date) => {
-                      const clockOutAt = date.toISOString();
+                    onChange={(clockOutAt) => {
                       if (clockOutAt === entry.clockOutAt) return;
                       saveEntry({ id: entry.id, clockInAt: entry.clockInAt, clockOutAt });
                     }}

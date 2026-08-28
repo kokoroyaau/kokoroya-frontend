@@ -4,13 +4,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { ShiftEntryInfo } from "@/schema/labour/labour.schema";
-
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+import { formatSydneyTime as formatTime } from "@/lib/timezone";
 
 export function ShiftEntriesTooltip({
   shifts,

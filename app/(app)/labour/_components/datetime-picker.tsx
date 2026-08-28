@@ -1,83 +1,44 @@
 "use client";
 
-import { useState } from "react";
-import { CalendarIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-
-function pad(n: number) {
-  return String(n).padStart(2, "0");
-}
-
-function timeOf(date: Date) {
-  return `${pad(date.getHours())}:${pad(date.getMinutes())}`;
-}
-
-function combine(date: Date, time: string) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const next = new Date(date);
-  next.setHours(hours || 0, minutes || 0, 0, 0);
-  return next;
-}
+import { sydneyTimeOfDay, sydneyWallTimeToUtc } from "@/lib/timezone";
 
 /**
- * shadcn-style date + time picker: a Calendar popover for the date and a
- * native time input for the time, combined into a single Date on change.
- * `value: null` renders as empty/placeholder (used for an open clock-out).
+ * Time-only editor for a clock entry. The calendar day is fixed to the
+ * entry's `date` (the "Date" column, already resolved server-side in
+ * business time) — only the time-of-day can be changed. The value typed is
+ * always interpreted as Australia/Sydney wall-clock time (where the shift
+ * physically happened), regardless of which timezone the person editing it
+ * (e.g. an owner travelling abroad) is currently browsing from.
+ * `value: null` renders empty (used for an open clock-out).
  */
-export function DateTimePicker({
+export function TimeInput({
+  date,
   value,
   onChange,
-  placeholder = "Pick date & time",
+  placeholder = "open",
   className,
 }: {
-  value: Date | null;
-  onChange: (date: Date) => void;
+  date: string;
+  value: string | null;
+  onChange: (iso: string) => void;
   placeholder?: string;
   className?: string;
 }) {
-  const [open, setOpen] = useState(false);
+  const [year, month, day] = date.split("-").map(Number);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button
-            variant="outline"
-            size="sm"
-            className={cn("justify-start font-normal", !value && "text-muted-foreground", className)}
-          >
-            <CalendarIcon />
-            {value
-              ? `${value.toLocaleDateString()} ${timeOf(value)}`
-              : placeholder}
-          </Button>
-        }
-      />
-      <PopoverContent className="w-auto p-0">
-        <Calendar
-          mode="single"
-          selected={value ?? undefined}
-          onSelect={(date) => {
-            if (!date) return;
-            onChange(combine(date, value ? timeOf(value) : "00:00"));
-          }}
-        />
-        <div className="flex items-center gap-2 border-t border-border/60 p-2.5">
-          <Input
-            type="time"
-            className="h-8"
-            value={value ? timeOf(value) : ""}
-            onChange={(e) => {
-              if (!e.target.value) return;
-              onChange(combine(value ?? new Date(), e.target.value));
-            }}
-          />
-        </div>
-      </PopoverContent>
-    </Popover>
+    <Input
+      type="time"
+      placeholder={placeholder}
+      className={cn("h-8 w-28", className)}
+      value={value ? sydneyTimeOfDay(value) : ""}
+      onChange={(e) => {
+        if (!e.target.value) return;
+        const [hour, minute] = e.target.value.split(":").map(Number);
+        onChange(sydneyWallTimeToUtc(year, month, day, hour, minute).toISOString());
+      }}
+    />
   );
 }
