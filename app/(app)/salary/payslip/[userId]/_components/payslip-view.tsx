@@ -111,7 +111,10 @@ export function PayslipView({
           </thead>
           <tbody>
             <PayLine label="Wages for ordinary hours worked (Weekday)" breakdown={employee.weekday} />
-            <PayLine label="Wages for ordinary hours worked (Sat)" breakdown={employee.saturday} />
+            <PayLine
+              label={`Wages for ordinary hours worked (${employee.sunday.hours > 0 ? "Sat" : "Weekend"})`}
+              breakdown={employee.saturday}
+            />
             <PayLine label="Wages for ordinary hours worked (Sun)" breakdown={employee.sunday} />
             <tr className="border-t border-border font-semibold">
               <td className="p-2" colSpan={3}>

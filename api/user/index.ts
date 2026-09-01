@@ -8,16 +8,23 @@ import type {
   EditUserPayload,
 } from "@/schema/user/user.schema";
 
-type CreateUserRequest = Omit<CreateUserPayload, "rate_weekday" | "rate_weekend" | "pin"> & {
+type CreateUserRequest = Omit<
+  CreateUserPayload,
+  "rate_weekday" | "rate_weekend" | "hour_cap_weekday" | "hour_cap_weekend" | "pin"
+> & {
   rate_weekday?: number;
   rate_weekend?: number;
+  hour_cap_weekday?: number;
+  hour_cap_weekend?: number;
   pin?: string;
 };
 type UpdateUserRequest = Partial<
-  Omit<EditUserPayload, "rate_weekday" | "rate_weekend"> & {
+  Omit<EditUserPayload, "rate_weekday" | "rate_weekend" | "hour_cap_weekday" | "hour_cap_weekend"> & {
     is_active: boolean;
     rate_weekday: number;
     rate_weekend: number;
+    hour_cap_weekday: number;
+    hour_cap_weekend: number;
   }
 >;
 

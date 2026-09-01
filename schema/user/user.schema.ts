@@ -27,6 +27,8 @@ export interface UserData {
   pin: string | null;
   rate_weekday: number | null;
   rate_weekend: number | null;
+  hour_cap_weekday: number | null;
+  hour_cap_weekend: number | null;
   is_active: boolean;
   permissions: string[];
   branch_ids: number[] | null;
@@ -53,6 +55,8 @@ export const employeeFormSchema = z.object({
   pin: z.union([z.string().regex(/^\d{4}$/, "PIN must be 4 digits"), z.literal("")]),
   rate_weekday: z.string().optional(),
   rate_weekend: z.string().optional(),
+  hour_cap_weekday: z.string().optional(),
+  hour_cap_weekend: z.string().optional(),
   permissions: z.array(z.string()),
   branch_ids: z.array(z.number()),
 });

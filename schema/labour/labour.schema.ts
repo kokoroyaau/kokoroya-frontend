@@ -25,6 +25,12 @@ export interface EmployeeWeekRow {
   total_hours: number;
   percentage_of_all: number;
   gross_pay: number;
+  cash_hours: number;
+  cash_amount: number;
+  hour_cap_weekday: number | null;
+  hour_cap_weekend: number | null;
+  pay_split_weekday: number | null;
+  pay_split_weekend: number | null;
 }
 
 export interface LabourDayInfo {

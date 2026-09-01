@@ -38,17 +38,29 @@ export async function createUserAction(payload: CreateUserPayload) {
     pin: toPinOrUndefined(payload.pin ?? ""),
     rate_weekday: toNumberOrUndefined(payload.rate_weekday),
     rate_weekend: toNumberOrUndefined(payload.rate_weekend),
+    hour_cap_weekday: toNumberOrUndefined(payload.hour_cap_weekday),
+    hour_cap_weekend: toNumberOrUndefined(payload.hour_cap_weekend),
   });
 }
 
 export async function updateUserAction(id: number, payload: EditUserPayload) {
-  const { permissions, branch_ids, rate_weekday, rate_weekend, pin, ...rest } =
-    payload;
+  const {
+    permissions,
+    branch_ids,
+    rate_weekday,
+    rate_weekend,
+    hour_cap_weekday,
+    hour_cap_weekend,
+    pin,
+    ...rest
+  } = payload;
   await updateUser(id, {
     ...rest,
     pin: toPinOrUndefined(pin),
     rate_weekday: toNumberOrUndefined(rate_weekday),
     rate_weekend: toNumberOrUndefined(rate_weekend),
+    hour_cap_weekday: toNumberOrUndefined(hour_cap_weekday),
+    hour_cap_weekend: toNumberOrUndefined(hour_cap_weekend),
   });
   await setUserPermissions(id, permissions);
   await setUserBranches(id, branch_ids);

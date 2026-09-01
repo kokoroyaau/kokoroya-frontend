@@ -5,6 +5,7 @@ import {
   getSalaryReport,
   upsertHourEntry,
   upsertWeeklyRate,
+  upsertPaySplit,
 } from "@/api/labour";
 
 export async function getLabourReportAction(startDate: string, endDate: string, branchId?: number) {
@@ -29,4 +30,13 @@ export async function upsertWeeklyRateAction(data: {
   weekend_rate: number;
 }) {
   return upsertWeeklyRate(data);
+}
+
+export async function upsertPaySplitAction(data: {
+  user_id: number;
+  week_start_date: string;
+  weekday_hours: number;
+  weekend_hours: number;
+}) {
+  return upsertPaySplit(data);
 }

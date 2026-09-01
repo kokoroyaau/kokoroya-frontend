@@ -66,6 +66,8 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
       pin: employee?.pin ?? "",
       rate_weekday: employee?.rate_weekday?.toString() ?? "",
       rate_weekend: employee?.rate_weekend?.toString() ?? "",
+      hour_cap_weekday: employee?.hour_cap_weekday?.toString() ?? "",
+      hour_cap_weekend: employee?.hour_cap_weekend?.toString() ?? "",
       permissions: employee?.permissions ?? [],
       branch_ids: employee?.branch_ids ?? [],
     };
@@ -279,6 +281,49 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
                         onBlur={field.onBlur}
                         thousandSeparator=","
                         decimalSeparator="."
+                        decimalScale={2}
+                        allowNegative={false}
+                        customInput={Input}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <FormField
+                control={form.control}
+                name="hour_cap_weekday"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Default Weekday Hours (optional)</FormLabel>
+                    <FormControl>
+                      <NumericFormat
+                        value={field.value}
+                        onValueChange={(values) => field.onChange(values.value)}
+                        onBlur={field.onBlur}
+                        decimalScale={2}
+                        allowNegative={false}
+                        customInput={Input}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="hour_cap_weekend"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Default Weekend Hours (optional)</FormLabel>
+                    <FormControl>
+                      <NumericFormat
+                        value={field.value}
+                        onValueChange={(values) => field.onChange(values.value)}
+                        onBlur={field.onBlur}
                         decimalScale={2}
                         allowNegative={false}
                         customInput={Input}

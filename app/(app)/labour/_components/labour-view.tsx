@@ -1,17 +1,25 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getLabourReportAction } from "@/lib/actions/labour";
 import { getReportAction as getFoodCostReportAction } from "@/lib/actions/foodcost";
 import { useDateRange } from "@/app/(app)/_components/use-date-range";
 import { DateRangePicker } from "@/app/(app)/_components/date-range-picker";
 import { ExportButton } from "@/app/(app)/_components/export-button";
+import { Button } from "@/components/ui/button";
+import { addDays } from "@/lib/date";
 import { downloadExcel } from "@/lib/excel";
 import { LabourGrid } from "./labour-grid";
 import { LabourRateCard } from "./labour-rate-card";
 
 export function LabourView() {
   const { from, to, startDate, endDate, dates, setRange } = useDateRange();
+  const spanDays = dates.length;
+
+  function shiftWeek(direction: -1 | 1) {
+    setRange(addDays(from, spanDays * direction), addDays(to, spanDays * direction));
+  }
 
   const queryKey = ["labour-report", startDate, endDate];
   const {
@@ -61,7 +69,15 @@ export function LabourView() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <DateRangePicker from={from} to={to} onChange={setRange} />
+        <div className="flex items-center gap-2">
+          <Button variant="brutal" size="icon" type="button" onClick={() => shiftWeek(-1)}>
+            <ChevronLeft />
+          </Button>
+          <DateRangePicker from={from} to={to} onChange={setRange} />
+          <Button variant="brutal" size="icon" type="button" onClick={() => shiftWeek(1)}>
+            <ChevronRight />
+          </Button>
+        </div>
         <ExportButton onClick={handleExport} />
       </div>
 

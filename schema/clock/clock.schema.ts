@@ -4,6 +4,7 @@ export interface PunchResponseData {
   action: "in" | "out";
   name: string;
   at: string;
+  hours?: number;
 }
 export type PunchResponse = BaseResponse<PunchResponseData>;
 

@@ -5,7 +5,13 @@ import { Button } from "@/components/ui/button";
 import { punchAction } from "@/lib/actions/clock";
 
 type Feedback =
-  | { type: "success"; action: "in" | "out"; name: string; at: string }
+  | {
+      type: "success";
+      action: "in" | "out";
+      name: string;
+      at: string;
+      hours?: number;
+    }
   | { type: "error"; message: string };
 
 const KEYS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "⌫"];
@@ -45,6 +51,7 @@ export function Keypad() {
           hour: "2-digit",
           minute: "2-digit",
         }),
+        hours: result.data.hours,
       });
     } else {
       setFeedback({ type: "error", message: result.error });
@@ -78,6 +85,11 @@ export function Keypad() {
               {feedback.action === "in" ? "Clocked in" : "Clocked out"} at{" "}
               {feedback.at}
             </p>
+            {feedback.action === "out" && feedback.hours != null && (
+              <p className="text-lg opacity-80">
+                Total: {feedback.hours} {feedback.hours === 1 ? "hour" : "hours"}
+              </p>
+            )}
           </>
         ) : (
           <h1 className="text-destructive text-3xl font-bold">

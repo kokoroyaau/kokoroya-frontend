@@ -2,8 +2,9 @@
 
 import { useMutation, useQueryClient, type QueryKey } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { upsertHourEntryAction } from "@/lib/actions/labour";
-import { shortDayLabel } from "@/lib/date";
+import { upsertHourEntryAction, upsertPaySplitAction } from "@/lib/actions/labour";
+import { shortDayLabel, mondayOf, isoDate } from "@/lib/date";
+import { NumericInput } from "@/app/(app)/_components/numeric-input";
 import type { LabourWeeklyReportData } from "@/schema/labour/labour.schema";
 import { HourInput } from "./hour-input";
 import { ShiftEntriesTooltip } from "./shift-entries-tooltip";
@@ -58,6 +59,14 @@ export function LabourGrid({
     },
   });
 
+  const { mutate: saveSplit } = useMutation({
+    mutationFn: upsertPaySplitAction,
+    onError: () => toast.error("Failed to save pay split"),
+    onSuccess: () => refetch(),
+  });
+
+  const weekStartDate = isoDate(mondayOf(new Date(`${report.start_date}T00:00:00`)));
+
   return (
     <div className="overflow-x-auto rounded-2xl border border-border/60">
       <table className="w-full text-sm">
@@ -71,13 +80,16 @@ export function LabourGrid({
             ))}
             <th className="p-3 text-right font-medium">Total</th>
             <th className="p-3 text-right font-medium">%</th>
+            <th className="p-3 text-right font-medium">Weekday (paid)</th>
+            <th className="p-3 text-right font-medium">Weekend (paid)</th>
+            <th className="p-3 text-right font-medium">Cash</th>
             <th className="p-3 text-right font-medium">Cost</th>
           </tr>
         </thead>
         <tbody>
           {report.employees.length === 0 && (
             <tr>
-              <td colSpan={dates.length + 4} className="text-muted-foreground p-4 text-center">
+              <td colSpan={dates.length + 6} className="text-muted-foreground p-4 text-center">
                 No employees in this branch.
               </td>
             </tr>
@@ -106,6 +118,57 @@ export function LabourGrid({
               </td>
               <td className="p-3 text-right">
                 {employee.percentage_of_all.toFixed(1)}%
+              </td>
+              <td className="p-3 text-right">
+                <NumericInput
+                  value={
+                    employee.pay_split_weekday ?? employee.hour_cap_weekday ?? employee.weekday.hours
+                  }
+                  onSave={(weekday_hours) =>
+                    saveSplit({
+                      user_id: employee.user_id,
+                      week_start_date: weekStartDate,
+                      weekday_hours,
+                      weekend_hours:
+                        employee.pay_split_weekend ??
+                        employee.hour_cap_weekend ??
+                        employee.saturday.hours + employee.sunday.hours,
+                    })
+                  }
+                  className="w-20 text-right"
+                />
+              </td>
+              <td className="p-3 text-right">
+                <NumericInput
+                  value={
+                    employee.pay_split_weekend ??
+                    employee.hour_cap_weekend ??
+                    employee.saturday.hours + employee.sunday.hours
+                  }
+                  onSave={(weekend_hours) =>
+                    saveSplit({
+                      user_id: employee.user_id,
+                      week_start_date: weekStartDate,
+                      weekday_hours:
+                        employee.pay_split_weekday ?? employee.hour_cap_weekday ?? employee.weekday.hours,
+                      weekend_hours,
+                    })
+                  }
+                  className="w-20 text-right"
+                />
+              </td>
+              <td className="p-3 text-right text-muted-foreground">
+                {employee.cash_hours > 0 ? (
+                  <>
+                    {employee.cash_hours.toFixed(2)}h · $
+                    {employee.cash_amount.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </>
+                ) : (
+                  "—"
+                )}
               </td>
               <td className="p-3 text-right font-medium">
                 {employee.gross_pay.toLocaleString(undefined, {

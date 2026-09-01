@@ -31,3 +31,12 @@ export async function upsertWeeklyRate(data: {
 }) {
   await api.put("/labour/rate", data);
 }
+
+export async function upsertPaySplit(data: {
+  user_id: number;
+  week_start_date: string;
+  weekday_hours: number;
+  weekend_hours: number;
+}) {
+  await api.put("/labour/pay-split", data);
+}
