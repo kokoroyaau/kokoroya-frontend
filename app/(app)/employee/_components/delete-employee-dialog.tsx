@@ -23,15 +23,14 @@ export function DeleteEmployeeDialog({ employee }: { employee: UserData }) {
 
   async function handleDelete() {
     setIsPending(true);
-    try {
-      await deleteUserAction(employee.id);
-      setOpen(false);
-      router.refresh();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to delete employee");
-    } finally {
-      setIsPending(false);
+    const result = await deleteUserAction(employee.id);
+    setIsPending(false);
+    if (!result.success) {
+      toast.error(result.error);
+      return;
     }
+    setOpen(false);
+    router.refresh();
   }
 
   return (

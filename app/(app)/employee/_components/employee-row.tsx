@@ -24,14 +24,12 @@ export function EmployeeRow({
 
   function restore() {
     startTransition(async () => {
-      try {
-        await toggleUserActiveAction(employee.id, true);
-        router.refresh();
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Failed to restore employee",
-        );
+      const result = await toggleUserActiveAction(employee.id, true);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
       }
+      router.refresh();
     });
   }
 

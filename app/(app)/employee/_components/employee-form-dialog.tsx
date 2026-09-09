@@ -82,19 +82,15 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (values: EmployeeFormPayload) => {
-      try {
-        if (isEdit) {
-          await updateUserAction(employee.id, values);
-        } else {
-          await createUserAction(values);
-        }
-        setOpen(false);
-        router.refresh();
-      } catch (err) {
-        toast.error(
-          err instanceof Error ? err.message : "Failed to save employee",
-        );
+      const result = isEdit
+        ? await updateUserAction(employee.id, values)
+        : await createUserAction(values);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
       }
+      setOpen(false);
+      router.refresh();
     },
   });
 
