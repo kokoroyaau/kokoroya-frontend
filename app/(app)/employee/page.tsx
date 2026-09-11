@@ -4,7 +4,7 @@ import { getUsersAction, getPermissionsAction } from "@/lib/actions/user";
 import { getBranches } from "@/api/branch";
 import { Button } from "@/components/ui/button";
 import { EmployeeFormDialog } from "./_components/employee-form-dialog";
-import { EmployeeRow } from "./_components/employee-row";
+import { EmployeeList } from "./_components/employee-list";
 
 export default async function EmployeePage() {
   const user = await getCurrentUser();
@@ -31,19 +31,15 @@ export default async function EmployeePage() {
           trigger={<Button variant="brutal">Add Employee</Button>}
         />
       </div>
-      <div className="flex flex-col gap-3">
-        {employees.length === 0 && (
-          <p className="text-muted-foreground">No employees yet.</p>
-        )}
-        {employees.map((e) => (
-          <EmployeeRow
-            key={e.id}
-            employee={e}
-            pages={permissions.pages}
-            branches={branches}
-          />
-        ))}
-      </div>
+      {employees.length === 0 ? (
+        <p className="text-muted-foreground">No employees yet.</p>
+      ) : (
+        <EmployeeList
+          employees={employees}
+          pages={permissions.pages}
+          branches={branches}
+        />
+      )}
     </div>
   );
 }
