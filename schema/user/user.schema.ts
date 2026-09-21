@@ -38,9 +38,9 @@ export interface UserData {
 export type UsersResponse = BaseResponse<UserData[]>;
 export type UserResponse = BaseResponse<UserData>;
 
-// Shared shape for the create/edit employee form. Email/password are both
-// optional — leaving them blank creates a PIN-only employee who can clock
-// in/out but never logs in.
+
+
+
 export const employeeFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.union([z.string().email("Invalid email"), z.literal("")]),
@@ -48,8 +48,8 @@ export const employeeFormSchema = z.object({
   role: z.enum(["owner", "employee"]),
   phone: z.string().optional(),
   tfn: z.string().optional(),
-  // Legal entity shown on this employee's payslip — kept per-employee since
-  // staff at the same branch can be employed under different entities.
+  
+  
   employer_name: z.string().optional(),
   employer_abn: z.string().optional(),
   pin: z.union([z.string().regex(/^\d{4}$/, "PIN must be 4 digits"), z.literal("")]),

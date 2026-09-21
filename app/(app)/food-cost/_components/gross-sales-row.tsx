@@ -62,8 +62,8 @@ export function GrossSalesRow({
       toast.error("Failed to save gross sales");
       refetch();
     },
-    // net_sales across a multi-week range depends on the server's per-day
-    // rate resolution — refetch to pick up the exact figure.
+    
+    
     onSuccess: () => refetch(),
   });
 

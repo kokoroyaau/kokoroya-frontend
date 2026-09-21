@@ -1,8 +1,8 @@
-// The business (and every clock-in kiosk) operates in Sydney/Melbourne time,
-// but this app can be viewed from any browser timezone (managers checking
-// reports remotely) and the backend stores everything in UTC. These helpers
-// are the single place that bridges the two: always compute/display in
-// BUSINESS_TZ regardless of the viewer's machine, never the browser default.
+
+
+
+
+
 export const BUSINESS_TZ = "Australia/Sydney";
 
 function timeZoneOffsetMs(utcMs: number, timeZone: string): number {
@@ -28,8 +28,8 @@ function timeZoneOffsetMs(utcMs: number, timeZone: string): number {
   return asUtc - utcMs;
 }
 
-// Converts a wall-clock time expressed in BUSINESS_TZ into the real UTC
-// instant it corresponds to.
+
+
 export function sydneyWallTimeToUtc(
   year: number,
   month: number,
@@ -50,7 +50,7 @@ export function formatSydneyTime(iso: string): string {
   });
 }
 
-// "HH:MM" (24h) for a native <input type="time">, always read in BUSINESS_TZ.
+
 export function sydneyTimeOfDay(iso: string): string {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone: BUSINESS_TZ,

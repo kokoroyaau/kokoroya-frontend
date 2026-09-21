@@ -24,9 +24,9 @@ function toPinOrUndefined(value: string) {
   return value === "" ? undefined : value;
 }
 
-// Next.js strips thrown error messages from Server Actions in production
-// (shows a generic "React error #441" instead), so every mutating action
-// returns errors as data via this wrapper instead of letting them throw.
+
+
+
 async function withResult(fn: () => Promise<void>) {
   try {
     await fn();

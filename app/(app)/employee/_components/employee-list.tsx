@@ -21,8 +21,8 @@ export function EmployeeList({
   pages: string[];
   branches: BranchData[];
 }) {
-  // Default to the first branch ever created (branches is already ordered
-  // by id — see branch.Repository.List).
+  
+  
   const [branchId, setBranchId] = useState(branches[0]?.id ?? null);
 
   const filtered = branchId

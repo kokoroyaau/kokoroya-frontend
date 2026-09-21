@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getLabourReportAction } from "@/lib/actions/labour";
 import { updateClockEntryAction } from "@/lib/actions/clock";
-import { mondayOf, isoDate, addDays } from "@/lib/date";
-import { WeekNav } from "@/app/(app)/_components/week-nav";
+import { addDays } from "@/lib/date";
+import { useDateRange } from "@/app/(app)/_components/use-date-range";
+import { DateRangePicker } from "@/app/(app)/_components/date-range-picker";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -42,17 +44,14 @@ function formatDuration(clockInAt: string, clockOutAt: string | null) {
 export function ClockEntriesView() {
   const [employeeFilter, setEmployeeFilter] = useState(ALL_EMPLOYEES);
   const queryClient = useQueryClient();
-  const searchParams = useSearchParams();
-  const weekParam = searchParams.get("week");
-  const monday = weekParam
-    ? mondayOf(new Date(`${weekParam}T00:00:00`))
-    : mondayOf(new Date());
-  const weekStartDate = isoDate(monday);
-  const weekEndDate = isoDate(addDays(monday, 6));
-  const prevWeekParam = isoDate(addDays(monday, -7));
-  const nextWeekParam = isoDate(addDays(monday, 7));
+  const { from, to, startDate: weekStartDate, endDate: weekEndDate, setRange } = useDateRange();
+  const spanDays = Math.round((to.getTime() - from.getTime()) / 86_400_000) + 1;
 
-  const queryKey = ["labour-report", weekStartDate];
+  function shiftRange(direction: -1 | 1) {
+    setRange(addDays(from, spanDays * direction), addDays(to, spanDays * direction));
+  }
+
+  const queryKey = ["labour-report", weekStartDate, weekEndDate];
   const { data: report, isLoading, error } = useQuery({
     queryKey,
     queryFn: () => getLabourReportAction(weekStartDate, weekEndDate),
@@ -65,8 +64,8 @@ export function ClockEntriesView() {
         clock_out_at: vars.clockOutAt,
       }),
     onError: () => toast.error("Failed to save clock entry"),
-    // Editing an entry recomputes labour hours server-side, so refetch
-    // rather than optimistically recompute daily/total hours here.
+    
+    
     onSuccess: () => queryClient.invalidateQueries({ queryKey }),
   });
 
@@ -99,12 +98,15 @@ export function ClockEntriesView() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <WeekNav
-          monday={monday}
-          weekStartDate={weekStartDate}
-          prevWeekParam={prevWeekParam}
-          nextWeekParam={nextWeekParam}
-        />
+        <div className="flex items-center gap-2">
+          <Button variant="brutal" size="icon" type="button" onClick={() => shiftRange(-1)}>
+            <ChevronLeft />
+          </Button>
+          <DateRangePicker from={from} to={to} onChange={setRange} />
+          <Button variant="brutal" size="icon" type="button" onClick={() => shiftRange(1)}>
+            <ChevronRight />
+          </Button>
+        </div>
         <Select value={employeeFilter} onValueChange={(v) => setEmployeeFilter(v ?? ALL_EMPLOYEES)}>
           <SelectTrigger className="w-56">
             <SelectValue placeholder="All employees" />
@@ -135,7 +137,7 @@ export function ClockEntriesView() {
             {entries.length === 0 && (
               <tr>
                 <td colSpan={5} className="text-muted-foreground p-4 text-center">
-                  No clock-in entries this week.
+                  No clock-in entries in this range.
                 </td>
               </tr>
             )}
