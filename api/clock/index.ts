@@ -13,3 +13,16 @@ export async function updateClockEntry(
   const res = await api.put<TimeEntryResponse>(`/clock/entries/${id}`, data);
   return res.data!;
 }
+
+export async function createClockEntry(data: {
+  user_id: number;
+  clock_in_at: string;
+  clock_out_at: string | null;
+}) {
+  const res = await api.post<TimeEntryResponse>("/clock/entries", data);
+  return res.data!;
+}
+
+export async function deleteClockEntry(id: number) {
+  await api.delete(`/clock/entries/${id}`);
+}
