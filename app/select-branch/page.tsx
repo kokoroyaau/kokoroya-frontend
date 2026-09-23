@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { getMyBranches } from "@/api/branch";
-import { getCurrentUser } from "@/lib/user";
+import { getCurrentUser, isPrivilegedRole } from "@/lib/user";
 import { selectBranchAction } from "@/lib/actions/branch";
 import { Button } from "@/components/ui/button";
 import { AutoSelectBranch } from "./_components/auto-select";
@@ -25,7 +25,7 @@ export default async function SelectBranchPage() {
           Pick which branch you want to work in.
         </p>
         {activeBranches.length === 0 ? (
-          user.role === "owner" ? (
+          isPrivilegedRole(user.role) ? (
             <div className="flex flex-col gap-3">
               <p>No branches yet. Create one on the Branches page first.</p>
               <Button variant="brutal" render={<Link href="/store" />}>

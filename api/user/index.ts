@@ -57,6 +57,13 @@ export async function deleteUser(id: number) {
   await api.delete(`/users/${id}`);
 }
 
+export async function changePassword(currentPassword: string, newPassword: string) {
+  await api.patch("/me/password", {
+    current_password: currentPassword,
+    new_password: newPassword,
+  });
+}
+
 export async function setUserPermissions(id: number, permissions: string[]) {
   await api.patch(`/users/${id}/permissions`, { permissions });
 }

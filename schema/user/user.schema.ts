@@ -45,7 +45,7 @@ export const employeeFormSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.union([z.string().email("Invalid email"), z.literal("")]),
   password: z.union([z.string().min(8, "At least 8 characters"), z.literal("")]),
-  role: z.enum(["owner", "employee"]),
+  role: z.enum(["owner", "manager", "employee"]),
   phone: z.string().optional(),
   tfn: z.string().optional(),
   
@@ -65,4 +65,4 @@ export type EmployeeFormPayload = z.infer<typeof employeeFormSchema>;
 export type CreateUserPayload = Omit<EmployeeFormPayload, "password"> & {
   password: string;
 };
-export type EditUserPayload = Omit<EmployeeFormPayload, "password">;
+export type EditUserPayload = EmployeeFormPayload;

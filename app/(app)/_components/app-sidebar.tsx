@@ -14,6 +14,7 @@ import {
   ArrowLeftRight,
   ReceiptText,
   Wallet,
+  KeyRound,
 } from "lucide-react";
 import {
   Sidebar,
@@ -25,7 +26,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { switchBranchAction } from "@/lib/actions/branch";
+import { isPrivilegedRole } from "@/lib/user";
 import { logoutAction } from "@/lib/actions/auth";
+import { ChangePasswordDialog } from "./change-password-dialog";
 import Image from "next/image";
 
 const NAV_ITEMS = [
@@ -74,7 +77,7 @@ export function AppSidebar({
 }) {
   const pathname = usePathname();
   const items = NAV_ITEMS.filter(
-    (item) => role === "owner" || permissions.includes(item.page),
+    (item) => isPrivilegedRole(role) || permissions.includes(item.page),
   );
 
   return (
@@ -108,7 +111,7 @@ export function AppSidebar({
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {role === "owner" && (
+          {isPrivilegedRole(role) && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 render={<Link href="/store" />}
@@ -124,6 +127,16 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <ChangePasswordDialog
+              trigger={
+                <SidebarMenuButton className={menuButtonClass}>
+                  <KeyRound />
+                  <span>Change Password</span>
+                </SidebarMenuButton>
+              }
+            />
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <form action={switchBranchAction}>
               <SidebarMenuButton type="submit" className={menuButtonClass}>

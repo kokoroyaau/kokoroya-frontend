@@ -58,7 +58,7 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
       name: employee?.name ?? "",
       email: employee?.email ?? "",
       password: "",
-      role: (employee?.role as "owner" | "employee") ?? "employee",
+      role: (employee?.role as "owner" | "manager" | "employee") ?? "employee",
       phone: employee?.phone ?? "",
       tfn: employee?.tfn ?? "",
       employer_name: employee?.employer_name ?? "",
@@ -137,33 +137,40 @@ export function EmployeeFormDialog({ pages, branches, employee, trigger }: Props
                 </FormItem>
               )}
             />
-            {!isEdit && (
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password (optional, requires an email)</FormLabel>
-                    <FormControl>
-                      <Input type="password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {isEdit
+                      ? "New Password (optional, leave blank to keep current)"
+                      : "Password (optional, requires an email)"}
+                  </FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="role"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select
+                    items={{ owner: "Owner", manager: "Manager", employee: "Employee" }}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="owner">Owner</SelectItem>
+                      <SelectItem value="manager">Manager</SelectItem>
                       <SelectItem value="employee">Employee</SelectItem>
                     </SelectContent>
                   </Select>

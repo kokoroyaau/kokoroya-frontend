@@ -8,6 +8,7 @@ import {
   deleteUser,
   setUserPermissions,
   setUserBranches,
+  changePassword,
 } from "@/api/user";
 import type {
   CreateUserPayload,
@@ -69,12 +70,14 @@ export async function updateUserAction(id: number, payload: EditUserPayload) {
     hour_cap_weekday,
     hour_cap_weekend,
     pin,
+    password,
     ...rest
   } = payload;
   return withResult(async () => {
     await updateUser(id, {
       ...rest,
       pin: toPinOrUndefined(pin),
+      password: password === "" ? undefined : password,
       rate_weekday: toNumberOrUndefined(rate_weekday),
       rate_weekend: toNumberOrUndefined(rate_weekend),
       hour_cap_weekday: toNumberOrUndefined(hour_cap_weekday),
@@ -94,5 +97,11 @@ export async function toggleUserActiveAction(id: number, isActive: boolean) {
 export async function deleteUserAction(id: number) {
   return withResult(async () => {
     await deleteUser(id);
+  });
+}
+
+export async function changePasswordAction(currentPassword: string, newPassword: string) {
+  return withResult(async () => {
+    await changePassword(currentPassword, newPassword);
   });
 }
