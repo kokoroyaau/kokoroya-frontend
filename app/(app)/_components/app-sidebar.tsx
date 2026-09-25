@@ -26,7 +26,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { switchBranchAction } from "@/lib/actions/branch";
-import { isPrivilegedRole } from "@/lib/user";
+import { isPrivilegedRole } from "@/lib/role";
 import { logoutAction } from "@/lib/actions/auth";
 import { ChangePasswordDialog } from "./change-password-dialog";
 import Image from "next/image";
